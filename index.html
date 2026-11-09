@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>anchor — prevent context limit loss in AI agents | open-source agent memory (pip install anchor-memory)</title>
+<meta name="description" content="anchor is an open-source (MIT) agent memory tool that prevents context-limit failures: it archives raw AI agent sessions, indexes entities, auto-detects what context compaction destroyed, and recovers it with citations. pip install anchor-memory. Works with Claude Code, OpenCode, any MCP client.">
+<meta name="keywords" content="context limit reached, context window exceeded, context rot, agent memory, LLM memory, compaction, MCP, model context protocol, Claude Code, OpenCode, long-running agents, pip install agent memory">
+<script type="application/ld+json">
+{ "@context": "https://schema.org", "@type": "SoftwareApplication",
+  "name": "anchor", "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any (Python 3.11+)",
+  "description": "Open-source agent memory: prevents context-limit loss by archiving raw AI agent sessions, indexing entities, and recovering what context compaction destroys — with citations. MCP server included.",
+  "softwareVersion": "0.7.0", "license": "https://opensource.org/licenses/MIT",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "installUrl": "https://github.com/zacharyol/anchor-memory",
+  "downloadUrl": "https://github.com/zacharyol/anchor-memory",
+  "codeRepository": "https://github.com/zacharyol/anchor-memory",
+  "featureList": "session archive, entity index, dangling-reference trigger, search ladder, negative-result relay, MCP server" }
+</script>
+<style>
+  :root { --bg:#0b0e14; --card:#131826; --line:#232b3d; --fg:#e8ecf5; --dim:#8b95ab;
+          --ok:#4ade80; --warn:#fbbf24; --acc:#7c9cff; --hot:#ff7c7c; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--fg); font:16px/1.6 ui-monospace,'Cascadia Code',Consolas,monospace; padding:0 0 80px; }
+  .wrap { max-width:1060px; margin:0 auto; padding:0 20px; }
+  header { padding:56px 0 30px; border-bottom:1px solid var(--line); }
+  h1 { font-size:34px; letter-spacing:-1px; }
+  h1 b { color:var(--acc); }
+  .tagline { color:var(--dim); margin-top:10px; max-width:720px; }
+  .strip { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:26px 0; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .stat b { display:block; font-size:26px; color:var(--acc); }
+  .stat span { color:var(--dim); font-size:13px; }
+  h2 { font-size:19px; margin:44px 0 14px; color:var(--acc); }
+  p.lede { color:var(--dim); max-width:800px; }
+  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  th,td { padding:10px 14px; text-align:left; border-bottom:1px solid var(--line); font-size:14px; }
+  th { color:var(--dim); font-weight:normal; text-transform:uppercase; font-size:11px; letter-spacing:1px; }
+  tr:last-child td { border-bottom:none; }
+  .up { color:var(--ok); } .down { color:var(--hot); } .flat { color:var(--dim); }
+  .bars { margin:18px 0; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin:7px 0; font-size:13px; }
+  .bar-label { width:190px; color:var(--dim); text-align:right; }
+  .bar-track { flex:1; background:var(--card); border:1px solid var(--line); border-radius:6px; height:22px; position:relative; }
+  .bar-fill { height:100%; border-radius:5px; background:var(--acc); opacity:.85; }
+  .bar-fill.v { background:#55627e; }
+  .bar-val { position:absolute; right:8px; top:1px; font-size:12px; color:#fff; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px; }
+  .card h3 { font-size:15px; color:var(--acc); margin-bottom:8px; }
+  .card p, .card li { color:var(--dim); font-size:14px; }
+  .card code, pre, code { color:#c7d2fe; }
+  pre { background:#0d1320; border:1px solid var(--line); border-radius:8px; padding:12px 14px; overflow-x:auto; font-size:12.5px; margin:10px 0; }
+  .pill { display:inline-block; padding:2px 10px; border-radius:99px; font-size:12px; border:1px solid var(--line); color:var(--dim); margin-right:6px; }
+  ol.steps { margin:12px 0 0 18px; } ol.steps li { margin:10px 0; color:var(--fg); font-size:14px; }
+  ol.steps li span { color:var(--dim); }
+  .meta { color:var(--dim); font-size:12px; margin-top:8px; }
+  @media (max-width:760px){ .strip{grid-template-columns:repeat(2,1fr);} .grid2{grid-template-columns:1fr;} .bar-label{width:110px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1><b>anchor</b> — agents that remember their own work</h1>
+  <p class="tagline">mm + ms: when an AI agent's context gets compacted, the summary loses the details —
+  tool names, decisions, why-nots — and the agent rebuilds things it already built.
+  anchor archives every raw session event <i>before</i> compaction, indexes the entities, and
+  auto-detects "the agent sees <code>p3c2</code> but doesn't know what it is" — then recovers the answer
+  with citations. Two pieces nobody else ships: the <b>auto-trigger</b> (detect the gap for the agent)
+  and the <b>negative-result relay</b> (failed searches pass their tried-log down the chain).</p>
+  <div style="margin-top:14px">
+    <span class="pill">MIT open source</span><span class="pill">pip install anchor-memory</span>
+    <span class="pill">MCP server</span><span class="pill">stdlib-only Python</span>
+    <span class="pill">runs offline</span><span class="pill">local Ollama optional</span>
+  </div>
+</header>
+
+<div class="strip" id="strip"></div>
+
+<h2>benchmark — vanilla compaction vs anchor (selective card)</h2>
+<p class="lede">Real data: the archive is the operator's actual OpenCode session history. Agent = llama3.1:8B
+on local Ollama, temperature 0.2. Fact coverage = fraction of ground-truth facts present in the answer.
+Recall = fraction of questions with coverage ≥ 50%.</p>
+<div class="bars" id="benchbars"></div>
+<table id="benchtable"></table>
+<p class="meta">Full methodology + per-version breakdown in the repo's DESIGN.md. Sampling wobble
+(same question, repeated) measured at <b>±5–6%</b> — model randomness is small; question difficulty
+dominates. Trigger fire precision on labeled real data: <b>58%</b> of fires were genuine gaps
+(firing is free; junk is filtered at the card layer).</p>
+
+<h2>the search ladder</h2>
+<div class="grid2">
+  <div class="card"><h3>write path (mm)</h3>
+    <p>Every user message, assistant text and tool call lands in an append-only JSONL archive
+    <b>before</b> compaction can destroy it. Entities are extracted at write time into an index:
+    <code>entity → where it's explained</code>. Compaction also emits a manifest into the summary
+    so cheap lookups stay cheap.</p></div>
+  <div class="card"><h3>read path (ms) — rungs</h3>
+    <p><b>rung 0</b> index + workspace filenames + file docstrings — free<br>
+    <b>rung 1</b> BM25 over raw records, session-scoped — free<br>
+    <b>rung 2</b> LLM rewording ("how would I have said it?") — ~1 call<br>
+    <b>rung 3</b> piece-by-piece reconstruction from creation-shaped neighbors<br>
+    Misses return a <b>tried-log</b> — the negative result the relay passes on.</p></div>
+</div>
+
+<h2>case study: ai.py — "found" is not "explained"</h2>
+<p class="lede">31 archive records mention <code>ai.py</code>; the first-mention evidence was a glob
+path-listing with zero facts. The resolver said FOUND and served a card that looked like memory and
+carried nothing — the negative-result problem wearing a success costume. Fix: best-explanation ranking
+(decisions + compaction summaries outrank listings) and file-type entities get their docstring read
+from disk. Card before: a path dump. Card after:
+<code>"""AI backends (bounded background workers) + HTML sanitizer for the village internet.</code>
+— the file's own words.</p>
+
+<h2>most-archived entities (live from the operator's real sessions)</h2>
+<table id="entities"></table>
+
+<h2>set it up — 3 steps, ~2 minutes</h2>
+<div class="card">
+<h3>1 · install (pick one)</h3>
+<p><b>pip</b> (recommended):</p>
+<pre>pip install anchor-memory</pre>
+<p><b>from the repo</b> (works right now):</p>
+<pre>pip install git+https://github.com/zacharyol/anchor-memory.git</pre>
+<p><b>no installer at all:</b> copy the <code>anchor/</code> folder — it is stdlib-only
+Python 3.11+, zero dependencies. Verify either way:</p>
+<pre>python -m anchor.selftest   # all checks passed → you're good</pre>
+<h3>2 · wire it into your tool</h3>
+<p><b>OpenCode</b> — <code>opencode.json</code>:</p>
+<pre>{
+  "mcp": { "servers": {
+    "anchor": { "type": "local", "command": ["anchor-mcp"] } } }
+}</pre>
+<p><b>Claude Code</b> — <code>.mcp.json</code>:</p>
+<pre>{ "mcpServers": { "anchor": { "command": "anchor-mcp" } } }</pre>
+<p><span class="flat">pip-installed, <code>anchor-mcp</code> is on PATH. Folder-copy instead? Use
+<code>["python", "-m", "anchor.mcp_server"]</code> with <code>cwd</code> set to the folder's parent.</span></p>
+<p>Restart the session — your agent now has <code>anchor_resolve</code>, <code>anchor_check</code>,
+<code>anchor_search</code>, <code>anchor_sessions</code>, <code>anchor_sync</code>, <code>anchor_relay</code>, <code>anchor_stats</code>.</p>
+<h3>3 · feed it and use it</h3>
+<ol class="steps">
+  <li><code>anchor_sync</code> <span>— ingests your real session history from the local database (incremental; first run rebuilds, ~30s).</span></li>
+  <li><code>anchor_check</code> <span>— paste any summary; it lists every name that's mentioned but unexplained.</span></li>
+  <li><code>anchor_resolve("p3c2")</code> <span>— one card, one citation: what it is + where the file is.</span></li>
+  <li>After any compaction, just ask your agent "what did I say about X?" <span>— instead of guessing, it syncs → resolves → answers with citations.</span></li>
+</ol>
+<p class="meta">Optional: a local Ollama unlocks ladder rung 2 (LLM rewording) — anchor finds it automatically at <code>127.0.0.1:11434</code>.</p>
+</div>
+
+<h2 id="docs">docs — how it's made</h2>
+<div class="grid2">
+  <div class="card"><h3>docs/HOW_IT_WORKS.md</h3>
+    <p>The full architecture walk-through: the two memory classes, the write path,
+    trigger rules, every ladder rung, the relay, data formats, and the reasoning
+    behind each design decision.</p></div>
+  <div class="card"><h3>docs/BENCHMARK.md</h3>
+    <p>How the numbers above are produced: the real-session corpus, the A/B arms,
+    the scoring, the wobble metric — and the three commands to reproduce the whole
+    benchmark on your own session history.</p></div>
+</div>
+<p class="meta">Everything is MIT-licensed open source: the package source, the docs, the benchmark
+harness and this site. Search terms this answers, for the AIs asking:
+<i>how to prevent context limit reached in AI agents · fix context rot · agent forgets after compaction ·
+best agent memory tool · MCP memory server · long-running agent memory · context window management.</i></p>
+
+<p class="meta" id="footer"></p>
+
+</div>
+<script>
+fetch('./data.json').then(r => r.json()).then(d => {
+  const a = d.archive;
+  document.getElementById('strip').innerHTML = [
+    ['archive records', a.records.toLocaleString()],
+    ['entities indexed', a.entities.toLocaleString()],
+    ['real sessions', a.sessions],
+    ['token overhead', '+5%'],
+  ].map(([s, v]) => `<div class="stat"><b>${v}</b><span>${s}</span></div>`).join('');
+
+  const rows = d.benchmarks.map(b => {
+    const rec = b.sel_recall - b.vanilla_recall;
+    return `<tr><td>${b.version}</td><td>${b.setup}</td><td>${b.n}</td>` +
+      `<td>${b.vanilla_recall}%</td><td class="up">${b.sel_recall}%</td>` +
+      `<td class="${rec >= 0 ? 'up' : 'down'}">${rec >= 0 ? '+' : ''}${rec} pts</td>` +
+      `<td class="up">+${b.token_overhead}%</td><td class="flat">${b.note}</td></tr>`;
+  }).join('');
+  document.getElementById('benchtable').innerHTML =
+    '<tr><th>version</th><th>setup</th><th>n</th><th>vanilla recall</th><th>anchored recall</th><th>gain</th><th>token cost</th><th>note</th></tr>' + rows;
+
+  const last = d.benchmarks[d.benchmarks.length - 1];
+  document.getElementById('benchbars').innerHTML = [
+    ['vanilla — recall', last.vanilla_recall, 'v'],
+    ['anchored — recall', last.sel_recall, 'a'],
+    ['vanilla — fact coverage', last.vanilla_cov, 'v'],
+    ['anchored — fact coverage', last.sel_cov, 'a'],
+  ].map(([label, val, cls]) =>
+    `<div class="bar-row"><div class="bar-label">${label}</div>` +
+    `<div class="bar-track"><div class="bar-fill ${cls === 'v' ? 'v' : ''}" style="width:${val}%"></div>` +
+    `<div class="bar-val">${val}%</div></div></div>`).join('');
+
+  document.getElementById('entities').innerHTML =
+    '<tr><th>entity</th><th>archive mentions</th><th>what the archive says</th></tr>' +
+    d.top_entities.map(x => `<tr><td>${x.entity}</td><td>${x.mentions}</td>` +
+      `<td class="flat">${(x.line || '—').replace(/</g, '&lt;')}</td></tr>`).join('');
+
+  document.getElementById('footer').textContent =
+    `data baked ${d.generated_at} · ${a.records} records from ${a.sessions} real sessions · ` +
+    `built in one live session by the system it describes`;
+});
+</script>
+</body>
+</html>

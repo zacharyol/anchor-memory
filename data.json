@@ -1,0 +1,352 @@
+{
+ "generated_at": "2026-11-09 19:55 UTC",
+ "archive": {
+  "records": 12991,
+  "entities": 16907,
+  "sessions": 70,
+  "kinds": {
+   "message": 3537,
+   "tool_call": 9440,
+   "decision": 14
+  }
+ },
+ "top_entities": [
+  {
+   "entity": "shell",
+   "mentions": 4353,
+   "line": "agent tool shell: {\"command\": \"dotnet build BreakInModMenu\\\\BreakInModMenu.csproj -c Release -p:UseStubs=false\", \"timeout\": 180000, \"workdir"
+  },
+  {
+   "entity": "edit",
+   "mentions": 2076,
+   "line": "agent tool edit: {\"newString\": \"            // CANVAS-OFF TEST: everything else in Update/OnGUI runs, but the\\n            // world-space VR"
+  },
+  {
+   "entity": "newString",
+   "mentions": 2070,
+   "line": "agent tool edit: {\"newString\": \"            // CANVAS-OFF TEST: everything else in Update/OnGUI runs, but the\\n            // world-space VR"
+  },
+  {
+   "entity": "oldString",
+   "mentions": 1442,
+   "line": "...k is the room. The room is the lock.\", \"oldString\": \" Under the line, in the same hand, smaller:\\n\\n        the lantern is already lit. w"
+  },
+  {
+   "entity": "read",
+   "mentions": 1168,
+   "line": "agent tool read: {\"path\": \"C:\\\\Users\\\\zacha\\\\OneDrive\\\\Documents\\\\Default Project\\\\BreakInFramework\\\\docs\\\\ARCHITECTURE.md\"} -> [{'type': 't"
+  },
+  {
+   "entity": "write",
+   "mentions": 884,
+   "line": "agent tool write: {\"content\": \"# GRABMod — mod/hack framework for GRAB (Rayne engine)\\n\\nStatus: **v1 recon + first engine-level hacks, buil"
+  },
+  {
+   "entity": "ai_village",
+   "mentions": 727,
+   "line": "...entire project C:\\Users\\zacha\\Downloads\\ai_village\" — an existing LLM-powered village simulation the user owns.  ## Requirements - Revamp"
+  },
+  {
+   "entity": "quest_virus",
+   "mentions": 426,
+   "line": "...\\\\OneDrive\\\\Documents\\\\Default Project\\\\quest_virus\\\\modmenu_bridge.h\"} -> [{'type': 'text', 'text': 'Read file C:\\\\Users\\\\zacha\\\\OneDriv"
+  },
+  {
+   "entity": "CheatCore",
+   "mentions": 405,
+   "line": "...).  ## Relevant Files - `BreakInModMenu\\CheatCore.cs`: all cheat logic, GameBridge resolution, compat probe, loot radar, room watchdog, g"
+  },
+  {
+   "entity": "execute",
+   "mentions": 390,
+   "line": "agent tool execute: {\"code\": \"const { readFileSync } = await import(\\\"fs\\\"); // not available in execute; use node instead\\n\"} -> [{'type': "
+  },
+  {
+   "entity": "sim",
+   "mentions": 360,
+   "line": "...lage\" — an existing LLM-powered village simulation the user owns.  ## Requirements - Revamp must cover the existing project without break"
+  },
+  {
+   "entity": "menu",
+   "mentions": 355,
+   "line": "...Objective - Build Yeeps VR (Quest) mod-menu features plus a standalone PC web dashboard, ending with an AI voice companion (mic → STT → L"
+  },
+  {
+   "entity": "util_extract",
+   "mentions": 339,
+   "line": "agent tool shell: {\"command\": \"D:\\\\util_extract\\\\MeshExport\\\\bin\\\\Debug\\\\net10.0\\\\MeshExport.exe exporttest\\necho \\\"run_exit=$LASTEXITCODE\\\""
+  },
+  {
+   "entity": "x64",
+   "mentions": 307,
+   "line": "...leases/tags/<tag>` → pick a Windows CPU-x64 asset → extract → quantize to `Q4_K_M`. 3. If quantizer can't be found, fall back to moving `"
+  },
+  {
+   "entity": "ps1",
+   "mentions": 303,
+   "line": "...opencode\\`: helper scripts (`deploy_dll.ps1`, `check_bin.ps1`, `dump_*.ps1` REA/Cecil recon, `verify_*` temp build dirs). - `BreakInModMe"
+  },
+  {
+   "entity": "nAt",
+   "mentions": 292,
+   "line": "...e only supported archive file format.\\r\\nAt line:3 char:1\\r\\n+ Expand-Archive \"$tmp\\\\old.nupkg\" -DestinationPath \"$tmp\\\\old\" -Force\\r\\n+ "
+  },
+  {
+   "entity": "index",
+   "mentions": 254,
+   "line": "...ain.py.   2. Visual overhaul of `static/index.html` (the web UI) — full-viewport DPR-crisp canvas with dynamic tile size `T`, terrain dep"
+  },
+  {
+   "entity": "remote_control",
+   "mentions": 250,
+   "line": "...tool write: {\"path\": \"C:\\\\Users\\\\zacha\\\\remote_control\\\\remote_server.py\", \"content\": \"import http.server, socketserver, subprocess, os, "
+  },
+  {
+   "entity": "sim.py",
+   "mentions": 244,
+   "line": "...ot. - Will NOT touch gameplay logic in `sim.py` (risky; engine is healthy). - Existing GHOST/PRIMORDIAL are fully deleted (folders + serv"
+  },
+  {
+   "entity": "BreakInModMenu/CheatCore.cs",
+   "mentions": 240,
+   "line": "...DLL fails copy).  ## Relevant Files - `BreakInModMenu\\CheatCore.cs`: all cheat logic, GameBridge resolution, compat probe, loot radar, ro"
+  },
+  {
+   "entity": "CheatCore.cs",
+   "mentions": 240,
+   "line": "...ments\\\\Default Project\\\\BreakInModMenu\\\\CheatCore.cs\"} -> [{'type': 'text', 'text': 'Read file C:\\\\Users\\\\zacha\\\\OneDrive\\\\Documents\\\\Def"
+  },
+  {
+   "entity": "grep",
+   "mentions": 240,
+   "line": "agent tool grep: {\"path\": \"C:\\\\Users\\\\zacha\\\\Downloads\\\\ai_village\\\\sim.py\", \"pattern\": \"s\\\\.judge\\\\(\"} -> [{'type': 'text', 'text': 'Found "
+  },
+  {
+   "entity": "nName",
+   "mentions": 237,
+   "line": "...st 2\"} -> [{'type': 'text', 'text': '\\r\\nName           Length\\r\\n----           ------\\r\\nvoice_test.wav 361604\\r\\nvideo:0kB audio:54kB "
+  },
+  {
+   "entity": "menu.cpp",
+   "mentions": 223,
+   "line": "...od-menu-addon\\\\mods\\\\starter-menu\\\\src\\\\menu.cpp\"} -> [{'type': 'text', 'text': 'Read file C:\\\\Users\\\\zacha\\\\OneDrive\\\\Documents\\\\Default"
+  },
+  {
+   "entity": "BreakInModMenu",
+   "mentions": 191,
+   "line": "...hands (exact path: VR `BepInEx\\plugins\\BreakInModMenu.dll`); if frozen without mod → SteamVR troubleshooting (controller tracking status,"
+  },
+  {
+   "entity": "BreakInModMenu.dll",
+   "mentions": 186,
+   "line": "...ls.\\nset SRC=%~dp0bin\\\\Release\\\\net6.0\\\\BreakInModMenu.dll\\ncopy /Y \\\"%SRC%\\\" \\\"D:\\\\Steam\\\\steamapps\\\\common\\\\The Break-In\\\\nonVR\\\\BepInE"
+  },
+  {
+   "entity": "net6",
+   "mentions": 179,
+   "line": "...PC check. - `BreakInModMenu\\bin\\Release\\net6.0\\BreakInModMenu.dll`: last good real build output (deploys from here). - `D:\\Steam\\steamapp"
+  },
+  {
+   "entity": "Assembly-CSharp",
+   "mentions": 177,
+   "line": "...Photon. Kick chain in `BepInEx\\interop\\Assembly-CSharp.dll`:  - `NetworkManager.kickPlayerNum(Int32 playerNum)` — game UI entry point - `"
+  },
+  {
+   "entity": "github.com",
+   "mentions": 176,
+   "line": "...cshorler/webcam-tools - GitHub](https://github.com/cshorler/webcam-tools/blob/master/uvcdynctrl/data/046d/logitech.xml)\\n\\nUVC webcam too"
+  },
+  {
+   "entity": "github",
+   "mentions": 176,
+   "line": "...search: {\"query\": \"gorilla tag mod menu github source code hand menu physical buttons TextMesh\"} -> [{'type': 'text', 'text': '## [This F"
+  },
+  {
+   "entity": "Assembly-CSharp.dll",
+   "mentions": 165,
+   "line": "...Photon. Kick chain in `BepInEx\\interop\\Assembly-CSharp.dll`:  - `NetworkManager.kickPlayerNum(Int32 playerNum)` — game UI entry point - `"
+  },
+  {
+   "entity": "python",
+   "mentions": 165,
+   "line": "...D:, run `D:\\heretic-work\\.venv\\Scripts\\python.exe D:\\heretic-work\\llamacpp\\llama.cpp-0.9.0\\convert_hf_to_gguf.py D:\\heretic-work\\output -"
+  },
+  {
+   "entity": "python.exe",
+   "mentions": 161,
+   "line": "...'; & 'D:\\\\heretic-work\\\\.venv\\\\Scripts\\\\python.exe' -m pip index versions heretic-llm --cache-dir 'D:\\\\heretic-work\\\\pip-cache' 2>&1 | Se"
+  },
+  {
+   "entity": "nOutput",
+   "mentions": 158,
+   "line": "...ell ID: sh_19b0494e5001qDVtct0FTTf7j9).\\nOutput is streaming to: C:\\\\Users\\\\zacha\\\\.local\\\\share\\\\opencode\\\\shell\\\\87c7d98fd8ee31863305cd"
+  },
+  {
+   "entity": "finishes",
+   "mentions": 157,
+   "line": "...notified automatically when the command finishes. The notification will include the command's output. Unless the user explicitly asks oth"
+  },
+  {
+   "entity": "n10",
+   "mentions": 156,
+   "line": "...po.\\n8: \\n9: ## Install a mod (players)\\n10: \\n11..."
+  },
+  {
+   "entity": "System",
+   "mentions": 152,
+   "line": "agent tool write: {\"content\": \"using System;\\nusing System.Collections.Generic;\\nusing System.IO;\\nusing System.Reflection;\\n\\nnamespace Bre"
+  },
+  {
+   "entity": "python3",
+   "mentions": 152,
+   "line": "...tool write: {\"content\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"\\nvoidmind_site.py — the void, and a button.\\n\\nNothing is said to the mind. Ever."
+  },
+  {
+   "entity": "build",
+   "mentions": 151,
+   "line": "...machine, so C++ never compiled; needs `build.bat`/`./build.sh` with ANDROID_NDK r27c and in-game log check (notably `starter-menu: ai ..."
+  },
+  {
+   "entity": "webfetch",
+   "mentions": 149,
+   "line": "agent tool webfetch: {\"format\": \"text\", \"url\": \"https://escapethebackrooms.app/maps-keys/level-2-map\"} -> [{'type': 'text', 'text': \"Level 2"
+  }
+ ],
+ "sessions_sample": [
+  [
+   "ses_e5adc7dc8ffdtFXZACI6o7n0S0",
+   {
+    "records": 1204,
+    "task": "Greeting"
+   }
+  ],
+  [
+   "ses_e63f6f159ffeBBakjQubpejheV",
+   {
+    "records": 1172,
+    "task": "Infinite cotton addon modification"
+   }
+  ],
+  [
+   "ses_e6ae9ecaaffdImD6Kw5pV7KibN",
+   {
+    "records": 1119,
+    "task": "The Break-In REA mod menu for VR and non-VR"
+   }
+  ],
+  [
+   "ses_e487f4ee6ffejSqtgyWlskrfgT",
+   {
+    "records": 772,
+    "task": "Automatic Value Scanner for Cheat Engine"
+   }
+  ],
+  [
+   "ses_e6640e40fffdc23GOf59Npb2IO",
+   {
+    "records": 747,
+    "task": "The Break-In crash and ban exploits"
+   }
+  ],
+  [
+   "ses_e60035ed1ffdH2XpVq2K6h2Ruh",
+   {
+    "records": 645,
+    "task": "Quest virus .so file creation"
+   }
+  ],
+  [
+   "ses_e552f2cd1ffewlCq6WPbz2mDqS",
+   {
+    "records": 610,
+    "task": "Yeeps APK Discord bot integration"
+   }
+  ],
+  [
+   "ses_e546290beffd2uiUd74KhlN8Ab",
+   {
+    "records": 572,
+    "task": "Remote PC access from Chromebook"
+   }
+  ],
+  [
+   "ses_e663ca77dffeLMpI73xSTcdFDo",
+   {
+    "records": 523,
+    "task": "Utility Room models, not maps"
+   }
+  ],
+  [
+   "ses_e68e04fa6ffdCq4sCQ8xLSLWNp",
+   {
+    "records": 503,
+    "task": "The Break-In PC mod loader architecture"
+   }
+  ],
+  [
+   "ses_e650f51a2ffdUAnW90GnXUVzbd",
+   {
+    "records": 348,
+    "task": "Charge the connected phone first"
+   }
+  ],
+  [
+   "ses_e6b28e77fffd4jMdm2T5hVwbZ1",
+   {
+    "records": 304,
+    "task": "Decompile obfuscated Atlas Remade DLL"
+   }
+  ]
+ ],
+ "benchmarks": [
+  {
+   "version": "v0.3",
+   "setup": "bulk cards, 12 questions",
+   "n": 9,
+   "vanilla_recall": 33,
+   "sel_recall": 44,
+   "vanilla_cov": 32,
+   "sel_cov": 56,
+   "token_overhead": 48,
+   "note": "first A/B; bulk injection cost"
+  },
+  {
+   "version": "v0.4",
+   "setup": "selective card, 12 questions",
+   "n": 9,
+   "vanilla_recall": 33,
+   "sel_recall": 44,
+   "vanilla_cov": 36,
+   "sel_cov": 57,
+   "token_overhead": 5,
+   "note": "one clean card beat twelve noisy ones"
+  },
+  {
+   "version": "v0.5",
+   "setup": "junk filter, 12 questions x3 repeats",
+   "n": 36,
+   "vanilla_recall": 19,
+   "sel_recall": 47,
+   "vanilla_cov": 28,
+   "sel_cov": 50,
+   "token_overhead": 5,
+   "note": "0 per-entity regressions of 12"
+  },
+  {
+   "version": "v0.6",
+   "setup": "best-explanation cards, 24 questions x3 repeats",
+   "n": 72,
+   "vanilla_recall": 19,
+   "sel_recall": 42,
+   "vanilla_cov": 32,
+   "sel_cov": 44,
+   "token_overhead": 5,
+   "note": "sampling wobble measured at +/-5-6%"
+  }
+ ],
+ "precision": {
+  "fires_labeled": 40,
+  "genuine": 23,
+  "pct": 58
+ }
+}
