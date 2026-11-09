@@ -62,6 +62,12 @@ negative-result merge — the last resort before "unfindable").
 | v0.4 | selective card | 33% → 44% | **+5%** |
 | v0.5 | junk filter, repeats (n=36) | 19% → **47%** | +5% |
 | v0.6 | best-explanation cards (n=72) | 19% → **42%** | +5% |
+| v0.7 | full rerun on shipped code (n=72) | 26% → 24% (wash) | +5% |
+
+v0.7 honesty note: the card-thinning regression (docstrings replacing rich
+lines) ate the recall gap — root-caused and fixed in the current source
+(docstring prepends, rich lines kept). Verification rerun of the fixed code
+pending; coverage still favored anchored (+5 pts) and wobble stayed ±5–6%.
 
 Trigger fire precision on labeled real data: 58% (firing is free — junk is
 filtered at the card layer). Sampling wobble ±5–6%: model randomness is small;
