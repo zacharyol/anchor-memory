@@ -26,14 +26,11 @@ and any MCP client can use it in one config block.
 ## install
 
 ```
-pip install anchor-memory        # from PyPI (once published — see site for status)
+pip install anchor-memory
 ```
 
-or straight from this repo — works right now:
-
-```
-pip install git+https://github.com/zacharyol/anchor-memory.git
-```
+**That's the whole install.** Verify with `python -m anchor.selftest`, then wire
+it into your tool (next section). Source, if you'd rather: `pip install git+https://github.com/zacharyol/anchor-memory.git`
 
 Website & full setup guide: https://zacharyol.github.io/anchor-memory/
 
