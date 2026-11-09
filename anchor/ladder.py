@@ -182,8 +182,11 @@ class Resolver:
         def hit(rec_text_low):
             if entity.lower() in rec_text_low:
                 return True
-            stem = stem_of(entity)          # formatting-variant tolerance
-            return len(stem) >= 4 and stem in rec_text_low
+            # formatting-variant tolerance: ALL significant entity tokens must
+            # be present ("GameObject.Find" -> gameobject + find) — a single
+            # stem is too loose (matched the English word "nonexistent")
+            toks = [t for t in re.split(r"[^a-z0-9]+", entity.lower()) if len(t) >= 3]
+            return bool(toks) and all(t in rec_text_low for t in toks)
 
         found = None
         if session:  # current-session evidence outranks global history
@@ -289,12 +292,13 @@ class Resolver:
 
         def searcher(idx, chunk):
             bm = BM25(chunk)
-            stem = stem_of(entity)
-            # entity alone first (hint terms dilute BM25 ranking)
+            # all significant entity tokens must appear (audit round-4: a stem
+            # like "nonexistent" matched unrelated records — false hits)
+            toks = [t for t in re.split(r"[^a-z0-9]+", entity.lower()) if len(t) >= 3]
             for q in (entity, entity + " " + (hint or "")):
                 for score, rec in bm.search(q, k=8):
                     low = rec["text"].lower()
-                    if entity.lower() in low or (len(stem) >= 4 and stem in low):
+                    if entity.lower() in low or (toks and all(t in low for t in toks)):
                         with lock:
                             results[idx] = (score, rec)
                         return
