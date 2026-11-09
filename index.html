@@ -119,13 +119,13 @@ from disk. Card before: a path dump. Card after:
 
 <h2>set it up — 3 steps, ~2 minutes</h2>
 <div class="card">
-<h3>1 · install (pick one)</h3>
-<p><b>pip</b> (recommended):</p>
+<h3>1 · install</h3>
+<p><b>pip</b> — that's the whole install:</p>
 <pre>pip install anchor-memory</pre>
-<p><b>from the repo</b> (works right now):</p>
+<p><b>from source instead:</b></p>
 <pre>pip install git+https://github.com/zacharyol/anchor-memory.git</pre>
 <p><b>no installer at all:</b> copy the <code>anchor/</code> folder — it is stdlib-only
-Python 3.11+, zero dependencies. Verify either way:</p>
+Python 3.11+, zero dependencies. Verify any of them:</p>
 <pre>python -m anchor.selftest   # all checks passed → you're good</pre>
 <h3>2 · wire it into your tool</h3>
 <p><b>OpenCode</b> — <code>opencode.json</code>:</p>
@@ -147,6 +147,30 @@ Python 3.11+, zero dependencies. Verify either way:</p>
   <li>After any compaction, just ask your agent "what did I say about X?" <span>— instead of guessing, it syncs → resolves → answers with citations.</span></li>
 </ol>
 <p class="meta">Optional: a local Ollama unlocks ladder rung 2 (LLM rewording) — anchor finds it automatically at <code>127.0.0.1:11434</code>.</p>
+</div>
+
+<h2>teach your agent WHEN to use it — 30-second AGENTS.md block</h2>
+<p class="lede">The trigger auto-detects forgotten names, but the agent still decides whether to
+reach for memory. Paste this into your project's <code>AGENTS.md</code> (full version:
+<code>AGENT_PROMPT.md</code> in the repo):</p>
+<div class="card">
+<pre style="font-size:12.5px">## anchor memory rules
+USE anchor when:
+- recall questions ("what did I say / what was that tool / how does X work
+  if we built it")  → anchor_sync, anchor_search, anchor_resolve
+  → answer with the citation, never from a guess
+- you see a name you can't explain → anchor_resolve it. never rebuild silently.
+- before building anything that might already exist → resolve first (0.1 ms vs 30 min)
+- right after a compaction → anchor_sync, anchor_check on the summary
+
+DO NOT use anchor when:
+- brand-new code (names that can't exist yet)
+- general knowledge: language syntax, public docs — that's training data
+- external/web lookups · brand-new project with no history
+
+rule: anchor answers "what did WE make here" — the internet answers
+"what does the world know". unsure if something exists? one resolve
+costs ~0.1 ms — check, then build.</pre>
 </div>
 
 <h2 id="docs">docs — how it's made</h2>
