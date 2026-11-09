@@ -114,7 +114,10 @@ class Resolver:
                 text = self._read(file_hit) or ""
                 line = next((ln.strip() for ln in text.splitlines() if ln.strip()), "")
                 if len(line) > 10 and not self._line_is_junk(line):
-                    what = line[:200]
+                    if len(entry["line"] or "") < 60:
+                        what = line[:200]                    # replace: nothing to keep
+                    elif line[:40] not in (entry["line"] or ""):
+                        what = (line[:110] + " | " + (entry["line"] or ""))[:200]
                     junk = False
             res = {"found": True, "via": "rung0:index",
                    "evidence": [{"archive": entry["explained_in"][:3]}],

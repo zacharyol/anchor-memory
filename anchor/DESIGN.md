@@ -172,6 +172,18 @@ explanation), and file-type entities now get a workspace filename pass on
 index hits (the file existed on disk the whole time; its docstring is the
 ground-truth card when the index line is weak).
 
+### v0.7 full rerun (0.7.0 code, n=72) — honest wash, regression found + fixed
+
+Recall 26% vanilla vs 24% selective (wash); coverage 33% → 38% (+5 pts);
++5% tokens; wobble ±5–6%. The v0.6 run's +23-pt recall gap did NOT reproduce.
+Root cause (from the persisted rows + card inspection): the file-docstring
+upgrade REPLACED rich index lines (~160 chars of facts) with short docstrings
+(~60 chars) — truer, but thinner: fewer fact words in the card, less for the
+answer to echo. 0.7.1 fix: weak lines (<60 chars) still get replaced; rich
+lines get the docstring PREPENDED — both facets in the card. Rerun pending.
+Also note: GT-union scoring lifted the vanilla baseline (+7 pts) — the metric
+became fairer to the unanchored arm, which shrinks measured gaps.
+
 ### v0.3/v0.4/v0.5 results (real corpus, llama3.1:8B agent)
 
 v0.5 = junk filter at the card layer, 3× repeats, 12 questions (n=36/arm), 0 failed calls:
