@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anchor-memory"
-version = "0.8.2"
+version = "0.9.0"
 description = "anchor — agents that remember their own work. mm + ms memory for AI agents: an append-only session archive, an entity index, a dangling-reference trigger and a search ladder that recovers what context compaction destroys."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -31,6 +31,7 @@ Repository = "https://github.com/zacharyol/anchor-memory"
 
 [project.scripts]
 anchor-mcp = "anchor.mcp_server:main"
+anchor-setup = "anchor.setup:main"
 
 [tool.setuptools]
 packages = ["anchor"]

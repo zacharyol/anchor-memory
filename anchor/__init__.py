@@ -1,3 +1,3 @@
 """anchor — mm + ms for AI agents. See DESIGN.md."""
 
-__version__ = "0.8.2"
+__version__ = "0.9.0"
