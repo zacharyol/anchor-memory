@@ -35,6 +35,8 @@ or straight from this repo — works right now:
 pip install git+https://github.com/zacharyol/anchor-memory.git
 ```
 
+Website & full setup guide: https://zacharyol.github.io/anchor-memory/
+
 ## quickstart
 
 ```
