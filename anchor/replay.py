@@ -102,57 +102,25 @@ def archive_source_ids(archive):
 
 
 def sync(db_path, archive):
-    """Incremental: append only messages not yet in the archive.
-    NEVER destructive: a missing database is reported, not "rebuilt over";
-    a rebuild stages first, refuses to stage empty, and backs up the current
-    archive before any swap."""
-    records = list(archive.iter())
+    """Incremental ONLY — never destructive (0.8.1: the rebuild path is gone).
+
+    Appends DB messages whose source_id is not already in the archive. Manual
+    memories (written via anchor_remember, no source_id) can never be
+    displaced: the archive is append-only and sync only adds. A missing
+    database is reported, not "rebuilt over".
+    Tradeoff: archives created before 0.8 (records without source_id) cannot
+    dedupe against the database — one ingest may add duplicates; manual
+    memories are always preserved."""
     if not os.path.exists(db_path):
         return {"added": 0, "total": archive.count(), "staged": None,
                 "rebuilt": False, "probes": [],
                 "error": f"database not found: {db_path} — archive left untouched"}
 
-    needs_rebuild = bool(records) and not any(r.get("source_id") for r in records)
-    if not needs_rebuild:
-        before = archive.count()
-        _, n_comp, probes = load_opencode_db(db_path, archive,
-                                             only_new=archive_source_ids(archive))
-        return {"added": archive.count() - before, "total": archive.count(),
-                "staged": None, "rebuilt": False, "probes": probes}
-
-    staged_path = archive.path + ".staged"
-    if os.path.exists(staged_path):
-        os.remove(staged_path)
-    fresh = Archive(staged_path)
-    _, n_comp, probes = load_opencode_db(db_path, fresh)
-    n_fresh = fresh.count()
-    fresh.close()
-    if n_fresh == 0:
-        # a rebuild that found NOTHING must never replace a live archive
-        os.remove(staged_path)
-        return {"added": 0, "total": archive.count(), "staged": None,
-                "rebuilt": False, "probes": [],
-                "error": ("rebuild found 0 records — refusing to overwrite "
-                          "the existing archive; staged file removed")}
-    staged = staged_path
-    try:
-        if archive.count() > 0:
-            import shutil
-            backup = archive.path + f".backup-{int(time.time())}"
-            import shutil as _sh
-            _sh.copy2(archive.path, backup)
-            # keep 5 rolling backups
-            import glob as _glob
-            olds = sorted(_glob.glob(archive.path + ".backup-*"))
-            for old in olds[:-5]:
-                os.remove(old)
-        os.replace(staged_path, archive.path)
-        staged = None
-        archive.reopen()          # recount from the swapped-in file
-    except PermissionError:
-        pass                      # live server holds the old file — promote later
-    return {"added": archive.count(), "total": archive.count(),
-            "staged": staged, "rebuilt": True, "probes": probes}
+    before = archive.count()
+    _, n_comp, probes = load_opencode_db(db_path, archive,
+                                         only_new=archive_source_ids(archive))
+    return {"added": archive.count() - before, "total": archive.count(),
+            "staged": None, "rebuilt": False, "probes": probes}
 
 
 def probe_trigger(probes, resolver, per_summary=5):

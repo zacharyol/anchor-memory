@@ -43,7 +43,7 @@ def find_dangling(context, explicit_explained=None):
         if e in explained or e in seen:
             continue
         # archive citation ids are pointers, not entities
-        if re.match(r"^a\d{6}$", e):
+        if re.match(r"^a\d{6}(\.x\d+)?$", e) or re.match(r"^a\d{13}x\d+x\d+$", e):
             continue
         seen.add(e)
         i = context.find(e)

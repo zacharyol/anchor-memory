@@ -18,15 +18,23 @@ class Archive:
                     if line.strip():
                         self._n += 1
         self._fh = open(path, "a", encoding="utf-8")
+        try:  # user-only perms on the archive (best effort; audit T4a)
+            os.chmod(path, 0o600)
+        except OSError:
+            pass
 
     def append(self, kind, text, task="", compaction=0, entities=None, ts=None, **extra):
         """Record one raw event. Entities auto-extracted when not given.
-        Extra keyword fields (session, source_id, source_ts) pass through."""
+        Extra keyword fields (session, source_id, source_ts) pass through.
+        Ids are collision-proof across concurrent servers: time + pid + counter."""
         if entities is None:
             entities = extract.extract_entities(text)
+        if ts is None:
+            ts = time.time()
         rec = {
-            "id": "a%06d" % (self._n + 1),
-            "ts": ts if ts is not None else time.time(),
+            "id": "a%013dx%02dx%03d" % (
+                int(ts * 1000), os.getpid() % 100, self._n % 1000),
+            "ts": ts,
             "kind": kind,          # message | tool_call | tool_result | decision
             "task": task,
             "compaction": compaction,
