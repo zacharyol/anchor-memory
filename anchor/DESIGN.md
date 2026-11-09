@@ -179,10 +179,11 @@ Recall 26% vanilla vs 24% selective (wash); coverage 33% → 38% (+5 pts);
 Root cause (from the persisted rows + card inspection): the file-docstring
 upgrade REPLACED rich index lines (~160 chars of facts) with short docstrings
 (~60 chars) — truer, but thinner: fewer fact words in the card, less for the
-answer to echo. 0.7.1 fix: weak lines (<60 chars) still get replaced; rich
-lines get the docstring PREPENDED — both facets in the card. Rerun pending.
-Also note: GT-union scoring lifted the vanilla baseline (+7 pts) — the metric
-became fairer to the unanchored arm, which shrinks measured gaps.
+answer to echo. Fix (in current source): weak lines (<60 chars) still get
+replaced; rich lines get the docstring PREPENDED — both facets in the card.
+Verification rerun pending. Also note: GT-union scoring lifted the vanilla
+baseline (+7 pts) — the metric became fairer to the unanchored arm, which
+shrinks measured gaps.
 
 ### v0.3/v0.4/v0.5 results (real corpus, llama3.1:8B agent)
 
