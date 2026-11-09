@@ -117,7 +117,7 @@ from disk. Card before: a path dump. Card after:
 <h2>most-archived entities (live from the operator's real sessions)</h2>
 <table id="entities"></table>
 
-<h2>set it up — 3 steps, ~2 minutes</h2>
+<h2>set it up — 2 commands + a restart</h2>
 <div class="card">
 <h3>1 · install</h3>
 <p><b>pip</b> — that's the whole install:</p>
@@ -127,26 +127,25 @@ from disk. Card before: a path dump. Card after:
 <p><b>no installer at all:</b> copy the <code>anchor/</code> folder — it is stdlib-only
 Python 3.11+, zero dependencies. Verify any of them:</p>
 <pre>python -m anchor.selftest   # all checks passed → you're good</pre>
-<h3>2 · wire it into your tool</h3>
-<p><b>OpenCode</b> — <code>opencode.json</code>:</p>
-<pre>{
-  "mcp": { "servers": {
-    "anchor": { "type": "local", "command": ["anchor-mcp"] } } }
-}</pre>
-<p><b>Claude Code</b> — <code>.mcp.json</code>:</p>
-<pre>{ "mcpServers": { "anchor": { "command": "anchor-mcp" } } }</pre>
-<p><span class="flat">pip-installed, <code>anchor-mcp</code> is on PATH. Folder-copy instead? Use
-<code>["python", "-m", "anchor.mcp_server"]</code> with <code>cwd</code> set to the folder's parent.</span></p>
-<p>Restart the session — your agent now has <code>anchor_resolve</code>, <code>anchor_check</code>,
-<code>anchor_search</code>, <code>anchor_sessions</code>, <code>anchor_sync</code>, <code>anchor_relay</code>, <code>anchor_stats</code>.</p>
-<h3>3 · feed it and use it</h3>
+<h3>2 · wire it in — one command</h3>
+<pre>anchor-setup</pre>
+<p>Detects your installed agent tools (OpenCode, Claude Code, Claude Desktop,
+Cursor, Windsurf, Codex CLI), backs up each config, merges the anchor block,
+and checks for your session database. Or pick targets:</p>
+<pre>anchor-setup --yes           # no prompts
+anchor-setup opencode claude-code codex</pre>
+<p class="flat">Manual paste still works: <code>{"mcpServers": {"anchor": {"command": "anchor-mcp"}}}</code></p>
+<h3>3 · restart your agent tool</h3>
+<p>Done — anchor's 8 memory tools are available, and your OpenCode history
+auto-ingests on first use.</p>
 <ol class="steps">
-  <li><code>anchor_sync</code> <span>— ingests your real session history from the local database (incremental; first run rebuilds, ~30s).</span></li>
+  <li><code>anchor_sync</code> <span>— re-ingest the latest messages anytime (incremental, never destructive).</span></li>
   <li><code>anchor_check</code> <span>— paste any summary; it lists every name that's mentioned but unexplained.</span></li>
   <li><code>anchor_resolve("p3c2")</code> <span>— one card, one citation: what it is + where the file is.</span></li>
+  <li><code>anchor_remember</code> <span>— write decisions so they survive compaction (works without OpenCode).</span></li>
   <li>After any compaction, just ask your agent "what did I say about X?" <span>— instead of guessing, it syncs → resolves → answers with citations.</span></li>
 </ol>
-<p class="meta">Optional: a local Ollama unlocks ladder rung 2 (LLM rewording) — anchor finds it automatically at <code>127.0.0.1:11434</code>.</p>
+<p class="meta">Optional: a local Ollama unlocks ladder rung 2 (LLM rewording) — anchor finds it automatically at <code>127.0.0.1:11434</code>. Set <code>ANCHOR_WORKSPACE</code> to enable workspace rungs over MCP.</p>
 </div>
 
 <h2>teach your agent WHEN to use it — 30-second AGENTS.md block</h2>
