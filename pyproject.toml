@@ -25,8 +25,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://anchor-mmms.pages.dev"
-Documentation = "https://anchor-mmms.pages.dev/#docs"
+Homepage = "https://anchor-mmms.zachary-remote.workers.dev"
+Documentation = "https://anchor-mmms.zachary-remote.workers.dev/#docs"
+Repository = "https://github.com/zacharyol/anchor-memory"
 
 [project.scripts]
 anchor-mcp = "anchor.mcp_server:main"

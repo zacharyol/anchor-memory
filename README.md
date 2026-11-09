@@ -26,17 +26,14 @@ and any MCP client can use it in one config block.
 ## install
 
 ```
-pip install anchor-memory
+pip install anchor-memory        # from PyPI (once published — see site for status)
 ```
 
-or straight from the repo:
+or straight from this repo — works right now:
 
 ```
-pip install git+https://github.com/YOUR-USER/anchor-memory.git
+pip install git+https://github.com/zacharyol/anchor-memory.git
 ```
-
-(No PyPI account yet? The folder-copy install works identically — see the
-[website](https://anchor-mmms.pages.dev) for the 3-step, 2-minute guide.)
 
 ## quickstart
 
@@ -93,4 +90,4 @@ MIT licensed — take it, wire it, fork it.
 
 Claude Code · OpenCode · any MCP client · local Ollama (optional, rung 2)
 
-MIT License · the website: https://anchor-mmms.pages.dev
+MIT License · repo: https://github.com/zacharyol/anchor-memory
