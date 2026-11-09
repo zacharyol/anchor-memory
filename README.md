@@ -29,6 +29,13 @@ and any MCP client can use it in one config block.
 pip install anchor-memory
 ```
 
+**0.8.0** (current): fixes from the first public audit — the archive now lives
+in `~/.anchor-memory/` (survives pip upgrades; 0.7.0 archives auto-migrate),
+`anchor_sync` is never destructive (missing database → reported, archive
+untouched; empty rebuilds refused; rolling backups kept), cross-platform
+database paths (Linux/macOS/Windows), and a new **`anchor_remember`** write
+tool so agents without OpenCode grow memory too.
+
 **That's the whole install.** Verify with `python -m anchor.selftest`, then wire
 it into your tool (next section). Source, if you'd rather: `pip install git+https://github.com/zacharyol/anchor-memory.git`
 
