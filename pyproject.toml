@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anchor-memory"
+version = "0.7.0"
+description = "anchor — agents that remember their own work. mm + ms memory for AI agents: an append-only session archive, an entity index, a dangling-reference trigger and a search ladder that recovers what context compaction destroys."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "anchor contributors" }]
+keywords = [
+    "ai", "agent", "memory", "context-window", "compaction", "context-limit",
+    "llm", "mcp", "model-context-protocol", "rag", "retrieval", "claude",
+    "opencode", "agent-memory", "long-running-agents",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Homepage = "https://anchor-mmms.pages.dev"
+Documentation = "https://anchor-mmms.pages.dev/#docs"
+
+[project.scripts]
+anchor-mcp = "anchor.mcp_server:main"
+
+[tool.setuptools]
+packages = ["anchor"]
