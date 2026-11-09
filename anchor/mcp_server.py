@@ -1,20 +1,25 @@
 """anchor MCP server — stdio transport, hand-rolled JSON-RPC 2.0, stdlib only.
 
 Gives any MCP client (OpenCode, Claude Code, ...) live access to anchor over
-the real session archive:
+a persistent archive in ~/.anchor-memory/ (survives pip upgrades and venv
+rebuilds; 0.7.0-and-earlier archives are migrated automatically):
 
   anchor_resolve(entity, hint?, session?)  resolve a named thing -> citation card
   anchor_check(context)                    trigger: find dangling references
   anchor_search(query, k?, session?)       BM25 over the archive (session-scopable)
   anchor_sessions()                        list sessions (id, title, records)
   anchor_sync()                            incremental re-ingest from opencode.db
+  anchor_remember(kind, text, task?)       write a memory (decision/note) —
+                                           for agents without OpenCode
+  anchor_relay(entity, hint?, shards?)     shard-searchers + negative-result merge
   anchor_stats()                           corpus stats + most-archived entities
 
 stdout carries ONLY protocol JSON; everything else goes to stderr.
-Run:  python -m anchor.mcp_server
+Run:  anchor-mcp   (or: python -m anchor.mcp_server)
 """
 import json
 import os
+import shutil
 import sys
 
 from .archive import Archive
@@ -24,7 +29,9 @@ from .trigger import find_dangling
 from .replay import DEFAULT_DB, sync as archive_sync
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ARCHIVE_PATH = os.path.join(HERE, "replay_archive.jsonl")
+ARCHIVE_DIR = os.environ.get("ANCHOR_ARCHIVE_DIR") or os.path.join(
+    os.path.expanduser("~"), ".anchor-memory")
+ARCHIVE_PATH = os.path.join(ARCHIVE_DIR, "archive.jsonl")
 DB_PATH = os.path.join(os.environ.get("USERPROFILE", ""),
                        ".local", "share", "opencode", "opencode.db")
 STATE = {}
@@ -58,12 +65,42 @@ def _session_list(records):
     return sess
 
 
+def _migrate_legacy_archive():
+    """0.7.0-and-earlier stored the archive next to the code (site-packages
+    or the workspace) — a pip upgrade would have wiped it. Move it to
+    ~/.anchor-memory once."""
+    if os.path.exists(ARCHIVE_PATH):
+        return
+    try:
+        os.makedirs(ARCHIVE_DIR, exist_ok=True)
+    except OSError:
+        return
+    for legacy in (os.path.join(HERE, "replay_archive.jsonl"),
+                   os.path.join(os.getcwd(), "anchor", "replay_archive.jsonl"),
+                   os.path.join(os.getcwd(), "replay_archive.jsonl")):
+        if os.path.exists(legacy) and os.path.getsize(legacy) > 0:
+            try:
+                shutil.copy2(legacy, ARCHIVE_PATH)
+                log(f"anchor: migrated archive from {legacy}")
+            except OSError:
+                pass
+            return
+
+
 def build_state():
+    _migrate_legacy_archive()
     staged = ARCHIVE_PATH + ".staged"
-    if os.path.exists(staged):  # promote a staged rebuild before opening
+    if os.path.exists(staged):
+        # promote a staged rebuild ONLY if it is non-empty — an empty staged
+        # file (failed rebuild, missing database) must never replace a
+        # populated archive (data-loss guard, from the 0.7.0 public audit)
         try:
-            os.replace(staged, ARCHIVE_PATH)
-            log("anchor: promoted staged rebuild")
+            if os.path.getsize(staged) > 0:
+                os.replace(staged, ARCHIVE_PATH)
+                log("anchor: promoted staged rebuild")
+            else:
+                os.remove(staged)
+                log("anchor: discarded EMPTY staged file (archive protected)")
         except PermissionError:
             log("anchor: staged rebuild present but live file is locked")
     if os.path.exists(ARCHIVE_PATH):
@@ -158,6 +195,9 @@ def h_sessions():
 def h_sync():
     before = STATE["arch"].count()
     result = archive_sync(DEFAULT_DB, STATE["arch"])
+    if result.get("error"):
+        return (f"sync skipped: {result['error']} "
+                f"(archive intact: {before} records)")
     if result["staged"]:
         # live file is locked by another server — serve the staged data NOW,
         # the file swap happens automatically on next server start
@@ -172,6 +212,17 @@ def h_sync():
             f"({', FULL REBUILD' if result['rebuilt'] else 'incremental'}), "
             f"{len(STATE['table'])} entities, {len(STATE['sessions'])} sessions"
             f"{note}")
+
+
+def h_remember(kind, text, task=""):
+    """Write-path for agents WITHOUT OpenCode: append a memory directly."""
+    if kind not in ("message", "tool_call", "tool_result", "decision"):
+        kind = "decision"
+    rid = STATE["arch"].append(kind, str(text)[:8000], task=str(task)[:120])
+    rebuild_state()
+    return (f"remembered as {rid} ({kind}, {len(STATE['table'])} entities now "
+            f"indexed). It survives compaction and is searchable via "
+            f"anchor_resolve / anchor_search.")
 
 
 def h_relay(entity, hint="", shards=4):
@@ -242,6 +293,21 @@ TOOLS = {
         "inputSchema": {"type": "object", "properties": {}},
         "handler": h_sync,
     },
+    "anchor_remember": {
+        "description": ("Write a memory directly into the archive — use this to "
+                        "record decisions, tool purposes and bug notes so they "
+                        "survive compaction (essential when no OpenCode database "
+                        "exists). Searchable immediately."),
+        "inputSchema": {"type": "object", "properties": {
+            "kind": {"type": "string", "enum": ["message", "tool_call",
+                      "tool_result", "decision"],
+                      "description": "memory type (default: decision)"},
+            "text": {"type": "string", "description": "the fact to remember, e.g. "
+                     "'built tools/p3c2.py — parses .ini config files'"},
+            "task": {"type": "string", "description": "task/project label"}},
+            "required": ["kind", "text"]},
+        "handler": h_remember,
+    },
     "anchor_relay": {
         "description": ("The relay: spins up shard-searcher threads over the "
                         "whole archive, each searching its slice; a hit anywhere "
@@ -271,7 +337,7 @@ def handle(msg):
             "protocolVersion": (msg.get("params") or {}).get(
                 "protocolVersion", "2024-11-05"),
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "anchor", "version": "0.7.0"}}}
+            "serverInfo": {"name": "anchor", "version": "0.8.0"}}}
     if method is None or mid is None:      # notification — no response
         return None
     if method == "ping":

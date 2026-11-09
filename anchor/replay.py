@@ -1,11 +1,9 @@
-"""v0.2 — replay REAL OpenCode session logs into the anchor archive.
+"""v0.8 — replay + incremental sync from a live OpenCode database.
 
-Reads the local OpenCode database (~/.local/share/opencode/opencode.db),
-converts every user message / assistant text / tool call into archive records
-(keeping each session's compaction generation), then probes the TRIGGER with
-the real post-compaction summaries and measures how the ladder does on them.
-
-    python -m anchor.replay [--db PATH] [--out PATH] [--probe N]
+Cross-platform: the OpenCode database lives at ~/.local/share/opencode/opencode.db
+on every OS (OpenCode uses the XDG data home; on Windows that resolves under the
+user profile). Sync is never destructive: a rebuild stages first, an empty
+rebuild is refused outright, and the current archive is backed up before any swap.
 """
 import json
 import os
@@ -17,10 +15,16 @@ from .index import BM25, build_entity_table
 from .ladder import Resolver
 from .trigger import find_dangling
 
-DEFAULT_DB = os.path.join(os.environ.get("USERPROFILE", ""),
-                          ".local", "share", "opencode", "opencode.db")
-MAX_TEXT = 8000       # cap per record — v0.2 keeps the archive buildable
+MAX_TEXT = 8000       # cap per record — keeps the archive buildable
 MAX_SUMMARY = 6000
+
+
+def default_db_path():
+    return os.path.join(os.path.expanduser("~"), ".local", "share",
+                        "opencode", "opencode.db")
+
+
+DEFAULT_DB = default_db_path()
 
 
 def load_opencode_db(db_path, archive, max_sessions=None, only_new=None):
@@ -99,10 +103,15 @@ def archive_source_ids(archive):
 
 def sync(db_path, archive):
     """Incremental: append only messages not yet in the archive.
-    If the archive predates session fields (no source_id), rebuild into a
-    staged file and swap it in — or leave it staged if another process (a
-    live server) holds the current file; it promotes on next startup."""
+    NEVER destructive: a missing database is reported, not "rebuilt over";
+    a rebuild stages first, refuses to stage empty, and backs up the current
+    archive before any swap."""
     records = list(archive.iter())
+    if not os.path.exists(db_path):
+        return {"added": 0, "total": archive.count(), "staged": None,
+                "rebuilt": False, "probes": [],
+                "error": f"database not found: {db_path} — archive left untouched"}
+
     needs_rebuild = bool(records) and not any(r.get("source_id") for r in records)
     if not needs_rebuild:
         before = archive.count()
@@ -116,9 +125,27 @@ def sync(db_path, archive):
         os.remove(staged_path)
     fresh = Archive(staged_path)
     _, n_comp, probes = load_opencode_db(db_path, fresh)
+    n_fresh = fresh.count()
     fresh.close()
+    if n_fresh == 0:
+        # a rebuild that found NOTHING must never replace a live archive
+        os.remove(staged_path)
+        return {"added": 0, "total": archive.count(), "staged": None,
+                "rebuilt": False, "probes": [],
+                "error": ("rebuild found 0 records — refusing to overwrite "
+                          "the existing archive; staged file removed")}
     staged = staged_path
     try:
+        if archive.count() > 0:
+            import shutil
+            backup = archive.path + f".backup-{int(time.time())}"
+            import shutil as _sh
+            _sh.copy2(archive.path, backup)
+            # keep 5 rolling backups
+            import glob as _glob
+            olds = sorted(_glob.glob(archive.path + ".backup-*"))
+            for old in olds[:-5]:
+                os.remove(old)
         os.replace(staged_path, archive.path)
         staged = None
         archive.reopen()          # recount from the swapped-in file
